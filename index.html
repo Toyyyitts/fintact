@@ -178,7 +178,7 @@
             max-width: 600px;
             display: flex;
             flex-direction: column;
-            gap: 10px; /* Reduced overall gap */
+            gap: 10px;
         }
 
         /* Top Header Logo Component */
@@ -292,7 +292,7 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             border: 1px solid var(--border);
             overflow-x: auto;
-            margin-bottom: 0; /* Fully eliminates space below tab bar */
+            margin-bottom: 0;
         }
 
         .nav-btn {
@@ -329,7 +329,7 @@
             display: flex;
             width: 400%;
             transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
-            align-items: flex-start; /* Keeps hidden tall tabs from affecting active tab height */
+            align-items: flex-start;
         }
 
         /* Pages */
@@ -337,7 +337,7 @@
             width: 25%;
             display: flex;
             flex-direction: column;
-            gap: 10px; /* Reduced gap between internal card sections */
+            gap: 10px;
             flex-shrink: 0;
             height: 0;
             overflow: hidden;
@@ -359,7 +359,6 @@
             position: relative;
         }
 
-        /* Divider lines between distinct card sections */
         hr.section-divider {
             border: none;
             border-top: 1px solid var(--border);
@@ -381,33 +380,68 @@
             flex-wrap: wrap;
         }
 
-        .balance-card-centered {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 10px 0 20px 0;
-            position: relative;
+        .dashboard-top-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
 
-        .balance-display {
-            font-size: 2.3rem;
+        @media (max-width: 420px) {
+            .dashboard-top-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-card-box {
+            background: var(--card-sub-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            min-height: 96px;
+        }
+
+        .stat-card-title {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .balance-display-small {
+            font-size: 1.6rem;
             font-weight: 800;
             color: var(--primary);
-            margin: 2px 0;
+            margin: 0;
             word-break: break-all;
+            line-height: 1.2;
+        }
+
+        .spent-display-small {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--danger);
+            margin: 0;
+            word-break: break-all;
+            line-height: 1.2;
         }
 
         .php-convert-tag {
             position: absolute;
             bottom: 6px;
-            right: 5px;
+            right: 8px;
             font-size: 0.60rem;
             font-weight: 700;
             color: var(--success);
             background: rgba(5, 150, 105, 0.08);
-            padding: 2px 8px;
+            padding: 2px 6px;
             border-radius: 6px;
             border: 1px solid rgba(5, 150, 105, 0.2);
             white-space: nowrap;
@@ -568,6 +602,7 @@
             border: 1px solid var(--border);
             border-radius: 10px;
             background: var(--card-sub-bg);
+            gap: 10px;
         }
 
         .theme-switch-wrapper {
@@ -684,10 +719,6 @@
                 <span class="brand-tagline">Tactical Financial Clarity</span>
             </div>
         </div>
-        <div class="brand-badge">
-            <div class="brand-badge-dot" id="rateStatusDot"></div>
-            <span id="rateStatus">Live Rates Active</span>
-        </div>
     </header>
 
     <!-- Top Navigation Bar -->
@@ -703,10 +734,19 @@
         <div class="pages-wrapper" id="pagesWrapper">
             <!-- PAGE 1: DASHBOARD -->
             <div id="page-dashboard" class="page active">
-                <div class="card balance-card-centered">
-                    <h2 style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600; margin-bottom: 2px;">Total Available Money</h2>
-                    <div class="balance-display" id="totalBalance">₱0.00</div>
-                    <div class="php-convert-tag" id="totalBalancePhp"></div>
+                <div class="card">
+                    <div class="dashboard-top-grid">
+                        <div class="stat-card-box">
+                            <span class="stat-card-title">Total Available Money</span>
+                            <div class="balance-display-small" id="totalBalance">₱0.00</div>
+                            <div class="php-convert-tag" id="totalBalancePhp"></div>
+                        </div>
+                        <div class="stat-card-box">
+                            <span class="stat-card-title">Total Spent</span>
+                            <div class="spent-display-small" id="dashboardTotalSpent">₱0.00</div>
+                            <div class="php-convert-tag" id="dashboardSpentPhp"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <hr class="section-divider">
@@ -744,7 +784,13 @@
             <!-- PAGE 2: MANAGE TAB -->
             <div id="page-management" class="page">
                 <div class="card">
-                    <h2>💱 Currency Preference</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <h2>💱 Currency Preference</h2>
+                        <div class="brand-badge" style="padding: 3px 8px; font-size: 0.7rem;">
+                            <div class="brand-badge-dot" id="rateStatusDot"></div>
+                            <span id="rateStatus">Live Rates Active</span>
+                        </div>
+                    </div>
                     <p style="font-size: 0.82rem; color: var(--text-muted); margin: 2px 0 6px 0;">Select or specify your primary currency symbol.</p>
                     <div class="currency-setting">
                         <select id="currencySelect" onchange="handleCurrencyChange()">
@@ -787,30 +833,52 @@
 
                 <div class="card">
                     <h2>Create New Savings Bucket</h2>
-                    <p style="font-size: 0.82rem; color: var(--text-muted); margin: 2px 0 8px 0;">Set up dedicated buckets to reserve money for specific goals.</p>
-                    <form id="savingsForm" onsubmit="createSavings(event)">
-                        <input type="text" id="savingsName" placeholder="Bucket Name (e.g. Travel)" required>
-                        <input type="number" id="savingsAmount" inputmode="decimal" placeholder="Initial Deposit" step="0.01" min="0" required>
-                        <input type="number" id="savingsGoal" inputmode="decimal" placeholder="Target Goal (Optional)" step="0.01" min="0">
-                        <button type="submit">Create Bucket</button>
-                    </form>
+                    <div id="createBucketToggleRow" style="display: flex; gap: 8px; margin-top: 6px;">
+                        <button id="showCreateBucketBtn" onclick="toggleCreateBucketForm()" class="btn-secondary" style="flex: 1;">+ Create Bucket</button>
+                        <button id="showEditBucketBtn" onclick="toggleEditBucketForm()" class="btn-secondary" style="flex: 1;">Edit Savings Bucket</button>
+                    </div>
+                    
+                    <div id="createBucketContainer" style="display: none; flex-direction: column; gap: 8px; margin-top: 8px;">
+                        <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0 0 2px 0;">Set up dedicated buckets to reserve money for specific goals.</p>
+                        <form id="savingsForm" onsubmit="createSavings(event)">
+                            <input type="text" id="savingsName" placeholder="Bucket Name (e.g. Travel)" required>
+                            <input type="number" id="savingsAmount" inputmode="decimal" placeholder="Initial Deposit" step="0.01" min="0" required>
+                            <input type="number" id="savingsGoal" inputmode="decimal" placeholder="Target Goal (Optional)" step="0.01" min="0">
+                            <div style="display: flex; gap: 8px;">
+                                <button type="submit" style="flex: 1;">Create Bucket</button>
+                                <button type="button" class="btn-danger" style="width: auto; min-width: 90px;" onclick="toggleCreateBucketForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="editBucketContainer" style="display: none; flex-direction: column; gap: 8px; margin-top: 8px;">
+                        <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0 0 2px 0;">Modify your bucket details or remove unwanted buckets.</p>
+                        <div class="delete-savings-list" id="editSavingsList"></div>
+                        <button type="button" id="editBucketCancelSaveBtn" class="btn-danger" style="margin-top: 4px;" onclick="handleEditBucketCancelOrSave()">Cancel</button>
+                    </div>
                 </div>
 
                 <hr class="section-divider">
 
                 <div class="card">
                     <h2>💸 Transfer Funds</h2>
-                    <form onsubmit="transferFunds(event)">
-                        <label style="font-size: 0.82rem; font-weight: 600; margin-bottom: -4px;">Move money between balances:</label>
-                        <select id="transferFrom" required>
-                            <option value="" disabled selected>Transfer from...</option>
-                        </select>
-                        <select id="transferTo" required>
-                            <option value="" disabled selected>Transfer to...</option>
-                        </select>
-                        <input type="number" id="transferAmount" inputmode="decimal" placeholder="Transfer Amount" step="0.01" min="0.01" required>
-                        <button type="submit">Execute Transfer</button>
-                    </form>
+                    <button id="showTransferBtn" onclick="toggleTransferForm()" class="btn-secondary" style="margin-top: 6px;">Execute Transfer</button>
+                    <div id="transferContainer" style="display: none; flex-direction: column; gap: 8px; margin-top: 8px;">
+                        <form onsubmit="transferFunds(event)">
+                            <label style="font-size: 0.82rem; font-weight: 600; margin-bottom: -4px;">Move money between balances:</label>
+                            <select id="transferFrom" required>
+                                <option value="" disabled selected>Transfer from...</option>
+                            </select>
+                            <select id="transferTo" required>
+                                <option value="" disabled selected>Transfer to...</option>
+                            </select>
+                            <input type="number" id="transferAmount" inputmode="decimal" placeholder="Transfer Amount" step="0.01" min="0.01" required>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="submit" style="flex: 1;">Execute Transfer</button>
+                                <button type="button" class="btn-danger" style="width: auto; min-width: 90px;" onclick="toggleTransferForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
 
@@ -880,14 +948,6 @@
 
                 <hr class="section-divider">
 
-                <div class="card">
-                    <h2>🗑️ Delete Savings Buckets</h2>
-                    <p style="font-size: 0.82rem; color: var(--text-muted); margin: 2px 0 8px 0;">Remove unwanted buckets. Bucket funds will automatically return to your main total balance.</p>
-                    <div class="delete-savings-list" id="deleteSavingsList"></div>
-                </div>
-
-                <hr class="section-divider">
-
                 <div class="card" style="border: 1px solid var(--danger);">
                     <h2 style="color: var(--danger);">⚠️ Danger Zone</h2>
                     <p style="font-size: 0.82rem; color: var(--text-muted); margin: 2px 0 8px 0;">Permanently clear all balance, savings buckets, and expense logs.</p>
@@ -911,6 +971,7 @@
 
     let phpExchangeRates = state.cachedRates;
     let activeBalanceMode = null;
+    let hasBucketBeenEdited = false;
     
     const pageOrder = ['dashboard', 'management', 'history', 'settings'];
     let currentPageIndex = 0;
@@ -969,15 +1030,19 @@
     function setRateStatusActive() {
         const statusText = document.getElementById('rateStatus');
         const statusDot = document.getElementById('rateStatusDot');
-        statusText.innerText = 'Live Rates Active';
-        statusDot.classList.remove('inactive');
+        if(statusText && statusDot) {
+            statusText.innerText = 'Live Rates Active';
+            statusDot.classList.remove('inactive');
+        }
     }
 
     function setRateStatusInactive() {
         const statusText = document.getElementById('rateStatus');
         const statusDot = document.getElementById('rateStatusDot');
-        statusText.innerText = 'Live Rates Inactive';
-        statusDot.classList.add('inactive');
+        if(statusText && statusDot) {
+            statusText.innerText = 'Live Rates Inactive';
+            statusDot.classList.add('inactive');
+        }
     }
 
     async function fetchLiveExchangeRates() {
@@ -1072,6 +1137,55 @@
                     }
                 }
             }
+        }
+    }
+
+    function toggleCreateBucketForm() {
+        const container = document.getElementById('createBucketContainer');
+        const toggleRow = document.getElementById('createBucketToggleRow');
+        if (container.style.display === 'none' || !container.style.display) {
+            container.style.display = 'flex';
+            toggleRow.style.display = 'none';
+        } else {
+            container.style.display = 'none';
+            toggleRow.style.display = 'flex';
+        }
+    }
+
+    function toggleEditBucketForm() {
+        const container = document.getElementById('editBucketContainer');
+        const toggleRow = document.getElementById('createBucketToggleRow');
+        const cancelSaveBtn = document.getElementById('editBucketCancelSaveBtn');
+
+        if (container.style.display === 'none' || !container.style.display) {
+            hasBucketBeenEdited = false;
+            cancelSaveBtn.innerText = 'Cancel';
+            cancelSaveBtn.className = 'btn-danger';
+            container.style.display = 'flex';
+            toggleRow.style.display = 'none';
+        } else {
+            container.style.display = 'none';
+            toggleRow.style.display = 'flex';
+        }
+    }
+
+    function handleEditBucketCancelOrSave() {
+        if (hasBucketBeenEdited) {
+            saveData();
+            switchPage('dashboard');
+        }
+        toggleEditBucketForm();
+    }
+
+    function toggleTransferForm() {
+        const container = document.getElementById('transferContainer');
+        const btn = document.getElementById('showTransferBtn');
+        if (container.style.display === 'none' || !container.style.display) {
+            container.style.display = 'flex';
+            btn.style.display = 'none';
+        } else {
+            container.style.display = 'none';
+            btn.style.display = 'block';
         }
     }
 
@@ -1197,13 +1311,54 @@
         document.getElementById('savingsName').value = '';
         document.getElementById('savingsAmount').value = '';
         document.getElementById('savingsGoal').value = '';
+        toggleCreateBucketForm();
         saveData();
         switchPage('dashboard');
+    }
+
+    function editSavingsBucket(id) {
+        const bucket = state.savings.find(s => s.id === id);
+        if (!bucket) return;
+
+        const newName = prompt("Enter new bucket name:", bucket.name);
+        if (newName === null) return;
+
+        const newAmountStr = prompt("Enter new current amount:", bucket.amount);
+        if (newAmountStr === null) return;
+        const newAmount = parseFloat(newAmountStr);
+        if (isNaN(newAmount) || newAmount < 0) {
+            alert("Invalid amount entered.");
+            return;
+        }
+
+        const otherBucketsSum = state.savings.filter(s => s.id !== id).reduce((acc, s) => acc + s.amount, 0);
+        if (newAmount + otherBucketsSum > state.totalBalance) {
+            alert("Total bucket amounts cannot exceed your total available balance.");
+            return;
+        }
+
+        const newGoalStr = prompt("Enter target goal (leave blank for none):", bucket.goal || '');
+        const newGoal = newGoalStr ? parseFloat(newGoalStr) : null;
+
+        bucket.name = newName.trim() || bucket.name;
+        bucket.amount = newAmount;
+        bucket.goal = !isNaN(newGoal) && newGoal > 0 ? newGoal : null;
+        
+        hasBucketBeenEdited = true;
+        const cancelSaveBtn = document.getElementById('editBucketCancelSaveBtn');
+        cancelSaveBtn.innerText = 'Save';
+        cancelSaveBtn.className = 'btn-success';
+
+        saveData();
     }
 
     function deleteSavings(id) {
         if (confirm("Delete this savings bucket? (Funds will remain in total balance)")) {
             state.savings = state.savings.filter(s => s.id !== id);
+            hasBucketBeenEdited = true;
+            const cancelSaveBtn = document.getElementById('editBucketCancelSaveBtn');
+            cancelSaveBtn.innerText = 'Save';
+            cancelSaveBtn.className = 'btn-success';
             saveData();
         }
     }
@@ -1240,6 +1395,7 @@
         }
 
         document.getElementById('transferAmount').value = '';
+        toggleTransferForm();
         saveData();
     }
 
@@ -1249,7 +1405,10 @@
         const source = document.getElementById('expenseSource').value;
         const category = document.getElementById('expenseCategory').value;
         const note = document.getElementById('expenseNote').value;
-        const today = new Date().toISOString().split('T')[0];
+        
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         if (!category) {
             alert("Please choose an expense category.");
@@ -1281,7 +1440,8 @@
             sourceName: source === 'main' ? 'Main Balance' : state.savings.find(s => s.id == source).name,
             category,
             note,
-            date: today
+            date: today,
+            time: timeString
         });
 
         document.getElementById('expenseAmount').value = '';
@@ -1307,9 +1467,9 @@
             return;
         }
 
-        let csv = "Date,Note,Category,Source,Amount\n";
+        let csv = "Date,Time,Note,Category,Source,Amount\n";
         state.expenses.forEach(e => {
-            csv += `"${e.date}","${e.note}","${e.category}","${e.sourceName}",${e.amount}\n`;
+            csv += `"${e.date}","${e.time || ''}","${e.note}","${e.category}","${e.sourceName}",${e.amount}\n`;
         });
 
         const blob = new Blob([csv], { type: 'text/csv' });
@@ -1342,6 +1502,9 @@
     function updateUI() {
         document.getElementById('totalBalance').innerText = formatMoney(state.totalBalance);
         
+        const overallTotalSpent = state.expenses.reduce((sum, e) => sum + e.amount, 0);
+        document.getElementById('dashboardTotalSpent').innerText = formatMoney(overallTotalSpent);
+
         const mainPhpTag = document.getElementById('totalBalancePhp');
         const convertedTotal = convertToPhpText(state.totalBalance);
         if (convertedTotal) {
@@ -1349,6 +1512,15 @@
             mainPhpTag.style.display = 'block';
         } else {
             mainPhpTag.style.display = 'none';
+        }
+
+        const spentPhpTag = document.getElementById('dashboardSpentPhp');
+        const convertedSpent = convertToPhpText(overallTotalSpent);
+        if (convertedSpent) {
+            spentPhpTag.innerText = convertedSpent;
+            spentPhpTag.style.display = 'block';
+        } else {
+            spentPhpTag.style.display = 'none';
         }
 
         document.getElementById('savingsCount').innerText = state.savings.length;
@@ -1360,11 +1532,11 @@
             savingsGrid.innerHTML = '<span style="color: var(--text-muted); font-size: 0.85rem;">No savings buckets created yet. Use the Manage tab to add one.</span>';
         }
 
-        const deleteSavingsList = document.getElementById('deleteSavingsList');
-        deleteSavingsList.innerHTML = '';
+        const editSavingsList = document.getElementById('editSavingsList');
+        editSavingsList.innerHTML = '';
 
         if (state.savings.length === 0) {
-            deleteSavingsList.innerHTML = '<span style="color: var(--text-muted); font-size: 0.85rem;">No savings buckets created yet.</span>';
+            editSavingsList.innerHTML = '<span style="color: var(--text-muted); font-size: 0.85rem;">No savings buckets created yet.</span>';
         }
         
         const expenseSource = document.getElementById('expenseSource');
@@ -1408,16 +1580,19 @@
             `;
             savingsGrid.appendChild(card);
 
-            const deleteItem = document.createElement('div');
-            deleteItem.className = 'delete-savings-item';
-            deleteItem.innerHTML = `
+            const editItem = document.createElement('div');
+            editItem.className = 'delete-savings-item';
+            editItem.innerHTML = `
                 <div style="display: flex; flex-direction: column;">
                     <strong style="font-size: 0.92rem;">${item.name}</strong>
                     <span style="font-size: 0.78rem; color: var(--text-muted);">${formatMoney(item.amount)}</span>
                 </div>
-                <button class="btn-danger btn-small" onclick="deleteSavings(${item.id})">Delete</button>
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn-small btn-secondary" onclick="editSavingsBucket(${item.id})">Edit</button>
+                    <button class="btn-danger btn-small" onclick="deleteSavings(${item.id})">Delete</button>
+                </div>
             `;
-            deleteSavingsList.appendChild(deleteItem);
+            editSavingsList.appendChild(editItem);
 
             const opt1 = new Option(`Savings: ${item.name} (${formatMoney(item.amount)})`, item.id);
             const opt2 = new Option(`Savings: ${item.name} (${formatMoney(item.amount)})`, item.id);
@@ -1427,8 +1602,6 @@
             transferFrom.add(opt2);
             transferTo.add(opt3);
         });
-
-        document.getElementById('savingsForm').querySelector('button').disabled = state.savings.length >= 10;
 
         const filter = document.getElementById('timeFilter').value;
         const today = new Date().toISOString().split('T')[0];
@@ -1459,10 +1632,11 @@
                 const li = document.createElement('li');
                 li.className = 'log-item';
                 const convertedExpPhp = convertToPhpText(exp.amount);
+                const displayTime = exp.time ? ` • ${exp.time}` : '';
                 li.innerHTML = `
                     <div class="log-details">
                         <strong>${exp.category} - ${exp.note}</strong>
-                        <span>${exp.date} • ${exp.sourceName}</span>
+                        <span>${exp.date}${displayTime} • ${exp.sourceName}</span>
                     </div>
                     <div style="display: flex; flex-direction: column; align-items: flex-end;">
                         <span style="color: var(--danger); font-weight: 700;">-${formatMoney(exp.amount)}</span>
