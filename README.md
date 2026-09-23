@@ -8,13 +8,6 @@
     A sleek, lightweight, offline-first Progressive Web App (PWA) built for modern expense tracking, envelope-style savings budgeting, and dynamic multi-currency management with real-time rate updates.
   </p>
 
-  <p>
-    <a href="#key-features">Key Features</a> •
-    <a href="#live-demo--installation">Installation</a> •
-    <a href="#technical-stack">Tech Stack</a> •
-    <a href="#license">License</a>
-  </p>
-
 </div>
 
 ---
