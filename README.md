@@ -7,14 +7,6 @@ A lightweight, private, single-file web app to track daily spending, allocate sa
 
 ---
 
-## 🚀 Quick Start
-
-1. Save the file as `index.html`.
-2. Double-click `index.html` to open it in your browser (Chrome, Safari, Edge, Firefox, etc.).
-3. Bookmark the page in your browser for fast daily access!
-
----
-
 ## ⚡ Features Overview
 
 - **Main Balance & Funds:** Set your total available money or add new income directly.
