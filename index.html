@@ -13,6 +13,16 @@
     <!-- Dynamic SVG Favicon for Desktop Tab Icon -->
     <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='bgGlow' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%231e1b4b'/><stop offset='50%' stop-color='%23311b92'/><stop offset='100%' stop-color='%230f172a'/></linearGradient><linearGradient id='neonCyan' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%2338bdf8'/><stop offset='100%' stop-color='%230ea5e9'/></linearGradient><linearGradient id='neonEmerald' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%2334d399'/><stop offset='100%' stop-color='%2310b981'/></linearGradient><linearGradient id='goldGlow' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23fbbf24'/><stop offset='100%' stop-color='%23f59e0b'/></linearGradient></defs><rect width='100' height='100' rx='26' fill='url(%23bgGlow)'/><path d='M 50 16 L 82 28 C 82 58 68 78 50 86 C 32 78 18 58 18 28 Z' fill='none' stroke='rgba(255,255,255,0.2)' stroke-width='2'/><path d='M 50 22 L 28 32 C 28 54 38 71 50 78 V 48 Z' fill='url(%23neonCyan)'/><path d='M 50 22 L 72 32 C 72 54 62 71 50 78 V 48 Z' fill='url(%23neonEmerald)'/><path d='M 50 26 L 63 42 H 54 V 58 H 46 V 42 H 37 Z' fill='url(%23goldGlow)'/><circle cx='50' cy='26' r='3' fill='%23ffffff'/></svg>">
 
+    <!-- Inline Web App Manifest for PWA Support -->
+    <link rel="manifest" href="data:application/manifest+json;utf8,{
+        %22name%22:%20%22Fintact%22,
+        %22short_name%22:%20%22Fintact%22,
+        %22start_url%22:%20%22.%22,
+        %22display%22:%20%22standalone%22,
+        %22background_color%22:%20%22%230f172a%22,
+        %22theme_color%22:%20%22%232563eb%22
+    }">
+
     <!-- Automatic Dynamic iOS Touch Icon Generator -->
     <script>
         (function generateAppleTouchIcon() {
@@ -65,6 +75,55 @@
         })();
     </script>
 
+    <!-- Offline Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    const CACHE_NAME = 'fintact-v1';
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME).then(cache => {
+                                return cache.addAll(['./']);
+                            }).then(() => self.skipWaiting())
+                        );
+                    });
+
+                    self.addEventListener('activate', event => {
+                        event.waitUntil(self.clients.claim());
+                    });
+
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request).then(cachedResponse => {
+                                if (cachedResponse) {
+                                    fetch(event.request).then(networkResponse => {
+                                        if (networkResponse.status === 200) {
+                                            caches.open(CACHE_NAME).then(cache => cache.put(event.request, networkResponse));
+                                        }
+                                    }).catch(() => {});
+                                    return cachedResponse;
+                                }
+                                return fetch(event.request).then(networkResponse => {
+                                    if (networkResponse.status === 200 && event.request.method === 'GET') {
+                                        const responseClone = networkResponse.clone();
+                                        caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+                                    }
+                                    return networkResponse;
+                                });
+                            })
+                        );
+                    });
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const blobUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(blobUrl)
+                    .then(() => console.log('Offline Service Worker Active'))
+                    .catch(err => console.warn('Service Worker registration skipped:', err));
+            });
+        }
+    </script>
+
     <style>
         :root {
             --bg-color: #f3f4f6;
@@ -110,6 +169,8 @@
             display: flex;
             justify-content: center;
             transition: background-color 0.3s, color 0.3s;
+            touch-action: pan-y; /* Prevent browser conflict during swipe */
+            overflow-x: hidden;
         }
 
         .container {
@@ -193,6 +254,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            white-space: nowrap;
         }
 
         .brand-badge-dot {
@@ -200,6 +262,25 @@
             height: 6px;
             background-color: var(--success);
             border-radius: 50%;
+            flex-shrink: 0;
+            transition: background-color 0.3s;
+        }
+
+        .brand-badge-dot.inactive {
+            background-color: var(--danger);
+        }
+
+        /* Mobile Adjustments for Badge */
+        @media (max-width: 480px) {
+            .brand-badge {
+                padding: 4px 8px;
+                font-size: 0.68rem;
+                gap: 4px;
+            }
+            .brand-badge-dot {
+                width: 5px;
+                height: 5px;
+            }
         }
 
         /* Navigation Bar */
@@ -217,7 +298,7 @@
         .nav-btn {
             flex: 1;
             padding: 10px 6px;
-            font-size: 0.78rem;
+            font-size: 0.85rem;
             font-weight: 600;
             border-radius: 8px;
             border: none;
@@ -235,15 +316,30 @@
             box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
         }
 
+        /* Pages Viewport Container for Swipe Animations */
+        .pages-viewport {
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .pages-wrapper {
+            display: flex;
+            width: 400%;
+            transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
         /* Pages */
         .page {
-            display: none;
+            width: 25%;
+            display: flex;
             flex-direction: column;
             gap: 16px;
+            flex-shrink: 0;
+            visibility: hidden;
         }
 
         .page.active {
-            display: flex;
+            visibility: visible;
         }
 
         .card {
@@ -253,6 +349,14 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             border: 1px solid var(--border);
             position: relative;
+        }
+
+        /* Divider lines between distinct card sections */
+        hr.section-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 0;
+            opacity: 0.8;
         }
 
         h2 { 
@@ -519,6 +623,16 @@
         input:checked + .slider:before {
             transform: translateX(24px);
         }
+
+        /* Developer Avatar */
+        .developer-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
@@ -589,180 +703,225 @@
             </div>
         </div>
         <div class="brand-badge">
-            <div class="brand-badge-dot"></div>
-            <span id="rateStatus">Live Rates</span>
+            <div class="brand-badge-dot" id="rateStatusDot"></div>
+            <span id="rateStatus">Live Rates Active</span>
         </div>
     </header>
 
     <!-- Top Navigation Bar -->
     <nav class="nav-bar">
-        <button class="nav-btn active" onclick="switchPage('dashboard')">📊 Dashboard</button>
-        <button class="nav-btn" onclick="switchPage('management')">💰 Manage</button>
-        <button class="nav-btn" onclick="switchPage('history')">📜 History</button>
-        <button class="nav-btn" onclick="switchPage('settings')">⚙️ Settings</button>
+        <button class="nav-btn active" onclick="switchPage('dashboard')">Dashboard</button>
+        <button class="nav-btn" onclick="switchPage('management')">Manage</button>
+        <button class="nav-btn" onclick="switchPage('history')">History</button>
+        <button class="nav-btn" onclick="switchPage('settings')">Settings</button>
     </nav>
 
-    <!-- PAGE 1: DASHBOARD -->
-    <div id="page-dashboard" class="page active">
-        <!-- Total Balance Display Section (Centered) -->
-        <div class="card balance-card-centered">
-            <h2 style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600; margin-bottom: 2px;">Total Available Money</h2>
-            <div class="balance-display" id="totalBalance">₱0.00</div>
-            <div class="php-convert-tag" id="totalBalancePhp"></div>
-        </div>
-
-        <!-- Savings Display Grid -->
-        <div class="card">
-            <h2>Savings Buckets Overview (<span id="savingsCount">0</span>/10)</h2>
-            <div class="savings-grid" id="savingsGrid"></div>
-        </div>
-
-        <!-- Daily Expense / Deduction Section -->
-        <div class="card">
-            <h2>Log Expense</h2>
-            <form id="expenseForm" onsubmit="deductExpense(event)">
-                <input type="number" id="expenseAmount" inputmode="decimal" placeholder="Amount spent" step="0.01" min="0.01" required>
-                <select id="expenseSource" required>
-                    <option value="" disabled selected>Deduct from...</option>
-                    <option value="main">Main Unallocated Balance</option>
-                </select>
-                <select id="expenseCategory" required>
-                    <option value="" disabled selected>Choose Category</option>
-                    <option value="🍔 Food">🍔 Food</option>
-                    <option value="🚗 Transport">🚗 Transport</option>
-                    <option value="🎬 Entertainment">🎬 Entertainment</option>
-                    <option value="💡 Utilities">💡 Utilities</option>
-                    <option value="🛍️ Shopping">🛍️ Shopping</option>
-                    <option value="📦 Other">📦 Other</option>
-                </select>
-                <input type="text" id="expenseNote" placeholder="Note (e.g. Dinner with friends)" required>
-                <button type="submit" class="btn-danger">Record Expense</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- PAGE 2: MANAGE TAB -->
-    <div id="page-management" class="page">
-        <!-- Currency Setting Section -->
-        <div class="card">
-            <h2>💱 Currency Preference</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 8px 0;">Select or specify your primary currency symbol.</p>
-            <div class="currency-setting">
-                <select id="currencySelect" onchange="handleCurrencyChange()">
-                    <option value="PHP" data-symbol="₱">PHP (₱)</option>
-                    <option value="TWD" data-symbol="NT$">TWD (NT$)</option>
-                    <option value="USD" data-symbol="$">USD ($)</option>
-                    <option value="EUR" data-symbol="€">EUR (€)</option>
-                    <option value="GBP" data-symbol="£">GBP (£)</option>
-                    <option value="JPY" data-symbol="¥">JPY (¥)</option>
-                    <option value="CAD" data-symbol="CAD $">CAD ($)</option>
-                    <option value="AUD" data-symbol="AUD $">AUD ($)</option>
-                    <option value="custom">Custom Code / Symbol...</option>
-                </select>
-                <input type="text" id="customCurrencyInput" placeholder="Currency Code (e.g., SGD, HKD)" style="display: none;" oninput="saveCustomCurrency()">
-            </div>
-        </div>
-
-        <!-- Manage Total Available Funds -->
-        <div class="card">
-            <h2>Update Total Available Funds</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Set or add new funds directly into your total available money pool.</p>
-            <div class="input-group">
-                <div style="display: flex; gap: 8px;">
-                    <button onclick="toggleBalanceInput('set')">Set Total</button>
-                    <button onclick="toggleBalanceInput('add')" class="btn-success">Add Funds</button>
+    <!-- Swipable Pages Viewport Wrapper -->
+    <div class="pages-viewport" id="pagesViewport">
+        <div class="pages-wrapper" id="pagesWrapper">
+            <!-- PAGE 1: DASHBOARD -->
+            <div id="page-dashboard" class="page active">
+                <!-- Total Balance Display Section (Centered) -->
+                <div class="card balance-card-centered">
+                    <h2 style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600; margin-bottom: 2px;">Total Available Money</h2>
+                    <div class="balance-display" id="totalBalance">₱0.00</div>
+                    <div class="php-convert-tag" id="totalBalancePhp"></div>
                 </div>
 
-                <div id="balanceInputContainer" style="display: none; flex-direction: column; gap: 8px; margin-top: 8px;">
-                    <input type="number" id="initBalanceInput" inputmode="decimal" placeholder="Enter Amount" step="0.01">
-                    <div style="display: flex; gap: 8px;">
-                        <button id="balanceConfirmBtn" onclick="confirmBalanceAction()">Confirm</button>
-                        <button onclick="cancelBalanceAction()" class="btn-danger" style="width: auto; min-width: 80px;">Cancel</button>
+                <hr class="section-divider">
+
+                <!-- Savings Display Grid -->
+                <div class="card">
+                    <h2>Savings Buckets Overview (<span id="savingsCount">0</span>/10)</h2>
+                    <div class="savings-grid" id="savingsGrid"></div>
+                </div>
+
+                <hr class="section-divider">
+
+                <!-- Daily Expense / Deduction Section -->
+                <div class="card">
+                    <h2>Log Expense</h2>
+                    <form id="expenseForm" onsubmit="deductExpense(event)">
+                        <input type="number" id="expenseAmount" inputmode="decimal" placeholder="Amount spent" step="0.01" min="0.01" required>
+                        <select id="expenseSource" required>
+                            <option value="" disabled selected>Deduct from...</option>
+                            <option value="main">Main Unallocated Balance</option>
+                        </select>
+                        <select id="expenseCategory" required>
+                            <option value="" disabled selected>Choose Category</option>
+                            <option value="🍔 Food">🍔 Food</option>
+                            <option value="🚗 Transport">🚗 Transport</option>
+                            <option value="🎬 Entertainment">🎬 Entertainment</option>
+                            <option value="💡 Utilities">💡 Utilities</option>
+                            <option value="🛍️ Shopping">🛍️ Shopping</option>
+                            <option value="📦 Other">📦 Other</option>
+                        </select>
+                        <input type="text" id="expenseNote" placeholder="Note (e.g. Dinner with friends)" required>
+                        <button type="submit" class="btn-danger">Record Expense</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- PAGE 2: MANAGE TAB -->
+            <div id="page-management" class="page">
+                <!-- Currency Setting Section -->
+                <div class="card">
+                    <h2>💱 Currency Preference</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 8px 0;">Select or specify your primary currency symbol.</p>
+                    <div class="currency-setting">
+                        <select id="currencySelect" onchange="handleCurrencyChange()">
+                            <option value="PHP" data-symbol="₱">PHP (₱)</option>
+                            <option value="TWD" data-symbol="NT$">TWD (NT$)</option>
+                            <option value="USD" data-symbol="$">USD ($)</option>
+                            <option value="EUR" data-symbol="€">EUR (€)</option>
+                            <option value="GBP" data-symbol="£">GBP (£)</option>
+                            <option value="JPY" data-symbol="¥">JPY (¥)</option>
+                            <option value="CAD" data-symbol="CAD $">CAD ($)</option>
+                            <option value="AUD" data-symbol="AUD $">AUD ($)</option>
+                            <option value="custom">Custom Code / Symbol...</option>
+                        </select>
+                        <input type="text" id="customCurrencyInput" placeholder="Currency Code (e.g., SGD, HKD)" style="display: none;" oninput="saveCustomCurrency()">
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Create Savings Bucket Form -->
-        <div class="card">
-            <h2>Create New Savings Bucket</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Set up dedicated buckets to reserve money for specific goals.</p>
-            <form id="savingsForm" onsubmit="createSavings(event)">
-                <input type="text" id="savingsName" placeholder="Bucket Name (e.g. Travel)" required>
-                <input type="number" id="savingsAmount" inputmode="decimal" placeholder="Initial Deposit" step="0.01" min="0" required>
-                <input type="number" id="savingsGoal" inputmode="decimal" placeholder="Target Goal (Optional)" step="0.01" min="0">
-                <button type="submit">Create Bucket</button>
-            </form>
-        </div>
+                <hr class="section-divider">
 
-        <!-- Money Transfer Section -->
-        <div class="card">
-            <h2>💸 Transfer Funds</h2>
-            <form onsubmit="transferFunds(event)">
-                <label style="font-size: 0.85rem; font-weight: 600; margin-bottom: -4px;">Move money between balances:</label>
-                <select id="transferFrom" required>
-                    <option value="" disabled selected>Transfer from...</option>
-                </select>
-                <select id="transferTo" required>
-                    <option value="" disabled selected>Transfer to...</option>
-                </select>
-                <input type="number" id="transferAmount" inputmode="decimal" placeholder="Transfer Amount" step="0.01" min="0.01" required>
-                <button type="submit">Execute Transfer</button>
-            </form>
-        </div>
-    </div>
+                <!-- Manage Total Available Funds -->
+                <div class="card">
+                    <h2>Update Total Available Funds</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Set or add new funds directly into your total available money pool.</p>
+                    <div class="input-group">
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="toggleBalanceInput('set')">Set Total</button>
+                            <button onclick="toggleBalanceInput('add')" class="btn-success">Add Funds</button>
+                        </div>
 
-    <!-- PAGE 3: HISTORY TAB -->
-    <div id="page-history" class="page">
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2 style="margin: 0;">📜 Spent Log History</h2>
-                <select id="timeFilter" onchange="updateUI()" style="width: auto; min-height: 36px; padding: 4px 8px;">
-                    <option value="today">Today</option>
-                    <option value="all">All History</option>
-                </select>
-            </div>
-            
-            <div style="margin-top: 12px; font-weight: 700; font-size: 1rem; position: relative;">
-                Total Spent: <span id="filteredTotal" style="color: var(--danger);">₱0.00</span>
-                <span class="php-convert-tag" id="historyTotalPhp" style="top: 0; bottom: auto;"></span>
-            </div>
+                        <div id="balanceInputContainer" style="display: none; flex-direction: column; gap: 8px; margin-top: 8px;">
+                            <input type="number" id="initBalanceInput" inputmode="decimal" placeholder="Enter Amount" step="0.01">
+                            <div style="display: flex; gap: 8px;">
+                                <button id="balanceConfirmBtn" onclick="confirmBalanceAction()">Confirm</button>
+                                <button onclick="cancelBalanceAction()" class="btn-danger" style="width: auto; min-width: 80px;">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <ul class="log-list" id="expenseLog"></ul>
-        </div>
-    </div>
+                <hr class="section-divider">
 
-    <!-- PAGE 4: SETTINGS & ACTIONS -->
-    <div id="page-settings" class="page">
-        <div class="card">
-            <h2>🎨 Preferences</h2>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-                <span style="font-weight: 600;" id="themeLabel">Dark Mode</span>
-                <div class="theme-switch-wrapper">
-                    <label class="theme-switch">
-                        <input type="checkbox" id="themeToggleSwitch" onchange="toggleDarkMode()">
-                        <span class="slider"></span>
-                    </label>
+                <!-- Create Savings Bucket Form -->
+                <div class="card">
+                    <h2>Create New Savings Bucket</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Set up dedicated buckets to reserve money for specific goals.</p>
+                    <form id="savingsForm" onsubmit="createSavings(event)">
+                        <input type="text" id="savingsName" placeholder="Bucket Name (e.g. Travel)" required>
+                        <input type="number" id="savingsAmount" inputmode="decimal" placeholder="Initial Deposit" step="0.01" min="0" required>
+                        <input type="number" id="savingsGoal" inputmode="decimal" placeholder="Target Goal (Optional)" step="0.01" min="0">
+                        <button type="submit">Create Bucket</button>
+                    </form>
+                </div>
+
+                <hr class="section-divider">
+
+                <!-- Money Transfer Section -->
+                <div class="card">
+                    <h2>💸 Transfer Funds</h2>
+                    <form onsubmit="transferFunds(event)">
+                        <label style="font-size: 0.85rem; font-weight: 600; margin-bottom: -4px;">Move money between balances:</label>
+                        <select id="transferFrom" required>
+                            <option value="" disabled selected>Transfer from...</option>
+                        </select>
+                        <select id="transferTo" required>
+                            <option value="" disabled selected>Transfer to...</option>
+                        </select>
+                        <input type="number" id="transferAmount" inputmode="decimal" placeholder="Transfer Amount" step="0.01" min="0.01" required>
+                        <button type="submit">Execute Transfer</button>
+                    </form>
                 </div>
             </div>
-        </div>
 
-        <div class="card">
-            <h2>🗑️ Delete Savings Buckets</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Remove unwanted buckets. Bucket funds will automatically return to your main total balance.</p>
-            <div class="delete-savings-list" id="deleteSavingsList"></div>
-        </div>
+            <!-- PAGE 3: HISTORY TAB -->
+            <div id="page-history" class="page">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0;">📜 Spent Log History</h2>
+                        <select id="timeFilter" onchange="updateUI()" style="width: auto; min-height: 36px; padding: 4px 8px;">
+                            <option value="today">Today</option>
+                            <option value="all">All History</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-top: 12px; font-weight: 700; font-size: 1rem; position: relative;">
+                        Total Spent: <span id="filteredTotal" style="color: var(--danger);">₱0.00</span>
+                        <span class="php-convert-tag" id="historyTotalPhp" style="top: 0; bottom: auto;"></span>
+                    </div>
 
-        <div class="card">
-            <h2>📥 Export Data</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Download your full expense log as a CSV spreadsheet file.</p>
-            <button class="btn-success" onclick="exportToCSV()">📄 Download CSV File</button>
-        </div>
+                    <ul class="log-list" id="expenseLog"></ul>
+                </div>
+            </div>
 
-        <div class="card" style="border: 1px solid var(--danger);">
-            <h2 style="color: var(--danger);">⚠️ Danger Zone</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Permanently clear all balance, savings buckets, and expense logs.</p>
-            <button class="btn-danger" onclick="resetAllData()">Reset All Data</button>
+            <!-- PAGE 4: SETTINGS & ACTIONS -->
+            <div id="page-settings" class="page">
+                <div class="card">
+                    <h2>🎨 Preferences</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                        <span style="font-weight: 600;" id="themeLabel">Dark Mode</span>
+                        <div class="theme-switch-wrapper">
+                            <label class="theme-switch">
+                                <input type="checkbox" id="themeToggleSwitch" onchange="toggleDarkMode()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="section-divider">
+
+                <!-- About the Developer Card -->
+                <div class="card">
+                    <h2>👨‍💻 About the Developer</h2>
+                    <div style="display: flex; align-items: center; gap: 12px; margin-top: 10px;">
+                        <img src="https://github.com/Toyyyitts.png" alt="Renei Dominic Obinario" class="developer-avatar">
+                        <div>
+                            <strong style="display: block; font-size: 0.95rem;">Created by Toyyyitts / Renei Dominic Obinario</strong>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Full-Stack Developer & Designer</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 12px 0 8px 0;">
+                        Fintact was built to bring tactical clarity and ease to daily budget management and multi-currency tracking.
+                    </p>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="https://github.com/Toyyyitts" target="_blank" style="text-decoration: none; width: 100%;">
+                            <button class="btn-secondary" style="min-height: 40px; font-size: 0.85rem;">⭐ Star on GitHub</button>
+                        </a>
+                    </div>
+                </div>
+
+                <hr class="section-divider">
+
+                <!-- Export Data Card -->
+                <div class="card">
+                    <h2>📥 Export Data</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Download your full expense log as a CSV spreadsheet file.</p>
+                    <button class="btn-success" onclick="exportToCSV()">📄 Download CSV File</button>
+                </div>
+
+                <hr class="section-divider">
+
+                <!-- Delete Savings Buckets Card -->
+                <div class="card">
+                    <h2>🗑️ Delete Savings Buckets</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Remove unwanted buckets. Bucket funds will automatically return to your main total balance.</p>
+                    <div class="delete-savings-list" id="deleteSavingsList"></div>
+                </div>
+
+                <hr class="section-divider">
+
+                <div class="card" style="border: 1px solid var(--danger);">
+                    <h2 style="color: var(--danger);">⚠️ Danger Zone</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Permanently clear all balance, savings buckets, and expense logs.</p>
+                    <button class="btn-danger" onclick="resetAllData()">Reset All Data</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -774,16 +933,24 @@
         theme: 'light',
         totalBalance: 0,
         savings: [],
-        expenses: []
+        expenses: [],
+        cachedRates: { PHP: 1, USD: 0.018, EUR: 0.016, JPY: 2.7, GBP: 0.014, TWD: 0.56, CAD: 0.024, AUD: 0.027 }
     };
 
-    let phpExchangeRates = { PHP: 1.0 };
+    let phpExchangeRates = state.cachedRates;
     let activeBalanceMode = null;
+    
+    // Tab tracking for swipe management
+    const pageOrder = ['dashboard', 'management', 'history', 'settings'];
+    let currentPageIndex = 0;
 
     window.onload = function() {
         const saved = localStorage.getItem('trackerState');
         if (saved) {
             state = JSON.parse(saved);
+            if (state.cachedRates) {
+                phpExchangeRates = state.cachedRates;
+            }
         }
 
         if (!state.currencyCode) {
@@ -816,31 +983,129 @@
             customInput.style.display = 'block';
         }
 
-        fetchLiveExchangeRates();
+        window.addEventListener('online', fetchLiveExchangeRates);
+        window.addEventListener('offline', setRateStatusInactive);
+
+        if (navigator.onLine) {
+            fetchLiveExchangeRates();
+        } else {
+            setRateStatusInactive();
+        }
+
+        initSwipeGestures();
     };
 
+    function setRateStatusActive() {
+        const statusText = document.getElementById('rateStatus');
+        const statusDot = document.getElementById('rateStatusDot');
+        statusText.innerText = 'Live Rates Active';
+        statusDot.classList.remove('inactive');
+    }
+
+    function setRateStatusInactive() {
+        const statusText = document.getElementById('rateStatus');
+        const statusDot = document.getElementById('rateStatusDot');
+        statusText.innerText = 'Live Rates Inactive';
+        statusDot.classList.add('inactive');
+    }
+
     async function fetchLiveExchangeRates() {
+        if (!navigator.onLine) {
+            setRateStatusInactive();
+            updateUI();
+            return;
+        }
+
         try {
-            const res = await fetch('https://open.er-api.com/v6/latest/PHP');
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
+            
+            const res = await fetch('https://open.er-api.com/v6/latest/PHP', { signal: controller.signal });
+            clearTimeout(timeoutId);
+            
             const data = await res.json();
             if (data && data.rates) {
                 phpExchangeRates = data.rates;
-                document.getElementById('rateStatus').innerText = 'Live Rates Active';
+                state.cachedRates = data.rates;
+                setRateStatusActive();
+                saveData();
+            } else {
+                setRateStatusInactive();
             }
         } catch (err) {
-            console.warn('Unable to fetch live rates, using fallback conversion rates.', err);
-            phpExchangeRates = { PHP: 1, USD: 0.018, EUR: 0.016, JPY: 2.7, GBP: 0.014, TWD: 0.56, CAD: 0.024, AUD: 0.027 };
-            document.getElementById('rateStatus').innerText = 'Offline Rates';
+            console.warn('Network issue or slow connection. Switching to inactive rates display.', err);
+            setRateStatusInactive();
         }
         updateUI();
     }
 
     function switchPage(pageName) {
-        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        const index = pageOrder.indexOf(pageName);
+        if (index === -1) return;
+        
+        currentPageIndex = index;
+        
+        const wrapper = document.getElementById('pagesWrapper');
+        wrapper.style.transform = `translateX(-${index * 25}%)`;
 
-        document.getElementById(`page-${pageName}`).classList.add('active');
-        event.target.classList.add('active');
+        document.querySelectorAll('.page').forEach((page, idx) => {
+            if (idx === index) {
+                page.classList.add('active');
+            } else {
+                page.classList.remove('active');
+            }
+        });
+
+        const navBtns = document.querySelectorAll('.nav-btn');
+        navBtns.forEach((btn, idx) => {
+            if (idx === index) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Touch Swipe Gesture Handler
+    function initSwipeGestures() {
+        const viewport = document.getElementById('pagesViewport');
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        viewport.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        viewport.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+
+            // Ensure horizontal swipe is dominant and significant (> 45px)
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 45) {
+                if (diffX < 0) {
+                    // Swiped Left -> Move to Next Tab
+                    if (currentPageIndex < pageOrder.length - 1) {
+                        switchPage(pageOrder[currentPageIndex + 1]);
+                    }
+                } else {
+                    // Swiped Right -> Move to Previous Tab
+                    if (currentPageIndex > 0) {
+                        switchPage(pageOrder[currentPageIndex - 1]);
+                    }
+                }
+            }
+        }
     }
 
     function saveData() {
@@ -1098,7 +1363,8 @@
                 theme: currentTheme,
                 totalBalance: 0,
                 savings: [],
-                expenses: []
+                expenses: [],
+                cachedRates: { PHP: 1, USD: 0.018, EUR: 0.016, JPY: 2.7, GBP: 0.014, TWD: 0.56, CAD: 0.024, AUD: 0.027 }
             };
             document.getElementById('currencySelect').value = 'PHP';
             document.getElementById('customCurrencyInput').style.display = 'none';
