@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fintact — Tactical Clarity for Your Money</title>
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --primary: #2563eb;
+            --primary-gradient: linear-gradient(135deg, #2563eb, #1d4ed8);
+            --danger: #dc2626;
+            --success: #059669;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --input-bg: #ffffff;
+            --card-sub-bg: #f9fafb;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #111827;
+            --card-bg: #1f2937;
+            --primary: #3b82f6;
+            --primary-gradient: linear-gradient(135deg, #3b82f6, #2563eb);
+            --danger: #ef4444;
+            --success: #10b981;
+            --text: #f9fafb;
+            --text-muted: #9ca3af;
+            --border: #374151;
+            --input-bg: #374151;
+            --card-sub-bg: #111827;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Top Redesigned Brand Header */
+        .brand-header {
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border);
+        }
+
+        .brand-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 800;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+        }
+
+        .brand-meta {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-name {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            margin: 0;
+            line-height: 1.2;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-tagline {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .brand-badge {
+            background: var(--card-sub-bg);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .brand-badge-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--success);
+            border-radius: 50%;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            display: flex;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border);
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            min-height: 40px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border);
+        }
+
+        h2 { 
+            margin: 0 0 8px 0; 
+            font-size: 1.05rem; 
+            font-weight: 700;
+        }
+
+        .currency-setting {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .balance-display {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 6px 0;
+            word-break: break-all;
+        }
+
+        form, .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        input, select, button {
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            min-height: 48px;
+            width: 100%;
+            outline: none;
+            background-color: var(--input-bg);
+            color: var(--text);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button:active { opacity: 0.85; }
+
+        .btn-danger { background-color: var(--danger); color: white; }
+        .btn-success { background-color: var(--success); color: white; }
+
+        .btn-small {
+            min-height: 36px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            width: auto;
+        }
+
+        .savings-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        @media (min-width: 400px) {
+            .savings-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .savings-card {
+            border: 1px solid var(--border);
+            padding: 14px;
+            border-radius: 12px;
+            background: var(--card-sub-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .savings-card h3 { 
+            margin: 0; 
+            font-size: 0.95rem; 
+            color: var(--text-muted);
+        }
+
+        .savings-card p { 
+            margin: 0; 
+            font-size: 1.1rem; 
+            font-weight: 700; 
+            word-break: break-all;
+        }
+
+        /* Progress Bar */
+        .progress-bar-bg {
+            width: 100%;
+            background-color: var(--border);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--success);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .log-list {
+            list-style: none;
+            padding: 0;
+            margin: 12px 0 0 0;
+        }
+
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            gap: 10px;
+        }
+
+        .log-item:last-child { border-bottom: none; }
+
+        .log-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .log-details strong { font-size: 0.95rem; }
+        .log-details span { font-size: 0.8rem; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Redesigned Top Header -->
+    <header class="brand-header">
+        <div class="brand-left">
+            <div class="brand-logo-icon">F</div>
+            <div class="brand-meta">
+                <span class="brand-name">Fintact</span>
+                <span class="brand-tagline">Tactical Financial Clarity</span>
+            </div>
+        </div>
+        <div class="brand-badge">
+            <div class="brand-badge-dot"></div>
+            <span>Active</span>
+        </div>
+    </header>
+
+    <!-- Top Navigation Bar -->
+    <nav class="nav-bar">
+        <button class="nav-btn active" onclick="switchPage('dashboard')">📊 Dashboard</button>
+        <button class="nav-btn" onclick="switchPage('settings')">⚙️ Settings & Actions</button>
+    </nav>
+
+    <!-- PAGE 1: DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+        <!-- Total Balance Section -->
+        <div class="card">
+            <h2>Total Available Money</h2>
+
+            <!-- Currency Selector -->
+            <div class="currency-setting">
+                <label for="currencySelect" style="font-size: 0.85rem; font-weight: 600;">Currency:</label>
+                <select id="currencySelect" onchange="handleCurrencyChange()" style="min-height: 36px; padding: 4px 8px; width: auto;">
+                    <option value="₱">PHP (₱)</option>
+                    <option value="NT$">TWD (NT$)</option>
+                    <option value="$">USD ($)</option>
+                    <option value="€">EUR (€)</option>
+                    <option value="£">GBP (£)</option>
+                    <option value="¥">JPY (¥)</option>
+                    <option value="CAD $">CAD ($)</option>
+                    <option value="AUD $">AUD ($)</option>
+                    <option value="custom">Custom...</option>
+                </select>
+                <input type="text" id="customCurrencyInput" placeholder="Code" style="display: none; width: 70px; min-height: 36px; padding: 4px 8px;" oninput="saveCustomCurrency()">
+            </div>
+
+            <div class="balance-display" id="totalBalance">₱0.00</div>
+            
+            <div class="input-group">
+                <input type="number" id="initBalanceInput" inputmode="decimal" placeholder="Amount" step="0.01">
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="setTotalBalance()">Set Total</button>
+                    <button onclick="addTotalBalance()" class="btn-success">Add Funds</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Savings Goals Section -->
+        <div class="card">
+            <h2>Savings Buckets (<span id="savingsCount">0</span>/10)</h2>
+            <form id="savingsForm" onsubmit="createSavings(event)">
+                <input type="text" id="savingsName" placeholder="Bucket Name (e.g. Travel)" required>
+                <input type="number" id="savingsAmount" inputmode="decimal" placeholder="Initial Deposit" step="0.01" min="0" required>
+                <input type="number" id="savingsGoal" inputmode="decimal" placeholder="Target Goal (Optional)" step="0.01" min="0">
+                <button type="submit">Create Bucket</button>
+            </form>
+            <div class="savings-grid" id="savingsGrid"></div>
+        </div>
+
+        <!-- Daily Expense / Deduction Section -->
+        <div class="card">
+            <h2>Log Expense</h2>
+            <form onsubmit="deductExpense(event)">
+                <input type="number" id="expenseAmount" inputmode="decimal" placeholder="Amount spent" step="0.01" min="0.01" required>
+                <select id="expenseSource" required>
+                    <option value="" disabled selected>Deduct from...</option>
+                    <option value="main">Main Unallocated Balance</option>
+                </select>
+                <select id="expenseCategory">
+                    <option value="🍔 Food">🍔 Food</option>
+                    <option value="🚗 Transport">🚗 Transport</option>
+                    <option value="🎬 Entertainment">🎬 Entertainment</option>
+                    <option value="💡 Utilities">💡 Utilities</option>
+                    <option value="🛍️ Shopping">🛍️ Shopping</option>
+                    <option value="📦 Other">📦 Other</option>
+                </select>
+                <input type="text" id="expenseNote" placeholder="Note (e.g. Dinner with friends)" required>
+                <button type="submit" class="btn-danger">Record Expense</button>
+            </form>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                <h3 style="font-size: 1rem; margin: 0;">Spent Log</h3>
+                <select id="timeFilter" onchange="updateUI()" style="width: auto; min-height: 36px; padding: 4px 8px;">
+                    <option value="today">Today</option>
+                    <option value="all">All History</option>
+                </select>
+            </div>
+            
+            <div style="margin-top: 8px; font-weight: 700; font-size: 0.95rem;">
+                Total: <span id="filteredTotal" style="color: var(--danger);">₱0.00</span>
+            </div>
+
+            <ul class="log-list" id="expenseLog"></ul>
+        </div>
+    </div>
+
+    <!-- PAGE 2: SETTINGS & ACTIONS -->
+    <div id="page-settings" class="page">
+        <!-- Appearance Settings -->
+        <div class="card">
+            <h2>🎨 Preferences</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                <span style="font-weight: 600;">Theme:</span>
+                <button class="btn-small" onclick="toggleDarkMode()" id="themeBtn">🌙 Dark Mode</button>
+            </div>
+        </div>
+
+        <!-- Money Transfer Section -->
+        <div class="card">
+            <h2>💸 Transfer Funds</h2>
+            <form onsubmit="transferFunds(event)">
+                <label style="font-size: 0.85rem; font-weight: 600; margin-bottom: -4px;">Move money between balances:</label>
+                <select id="transferFrom" required>
+                    <option value="" disabled selected>Transfer from...</option>
+                </select>
+                <select id="transferTo" required>
+                    <option value="" disabled selected>Transfer to...</option>
+                </select>
+                <input type="number" id="transferAmount" inputmode="decimal" placeholder="Transfer Amount" step="0.01" min="0.01" required>
+                <button type="submit">Execute Transfer</button>
+            </form>
+        </div>
+
+        <!-- Data Export & Backup Section -->
+        <div class="card">
+            <h2>📥 Export Data</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Download your full expense history as a CSV spreadsheet file.</p>
+            <button class="btn-success" onclick="exportToCSV()">Export Expense History</button>
+        </div>
+
+        <!-- Danger Zone Section -->
+        <div class="card" style="border: 1px solid var(--danger);">
+            <h2 style="color: var(--danger);">⚠️ Danger Zone</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Permanently clear all balance, savings buckets, and expense logs.</p>
+            <button class="btn-danger" onclick="resetAllData()">Reset All Data</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let state = {
+        currency: '₱',
+        theme: 'light',
+        totalBalance: 0,
+        savings: [],
+        expenses: []
+    };
+
+    window.onload = function() {
+        const saved = localStorage.getItem('trackerState');
+        if (saved) {
+            state = JSON.parse(saved);
+        }
+        
+        // Setup Theme
+        if (state.theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.getElementById('themeBtn').innerText = '☀️ Light Mode';
+        }
+
+        // Setup Currency
+        const select = document.getElementById('currencySelect');
+        const customInput = document.getElementById('customCurrencyInput');
+        const presetValues = Array.from(select.options).map(opt => opt.value);
+        
+        if (presetValues.includes(state.currency)) {
+            select.value = state.currency;
+            customInput.style.display = 'none';
+        } else {
+            select.value = 'custom';
+            customInput.value = state.currency;
+            customInput.style.display = 'inline-block';
+        }
+
+        updateUI();
+    };
+
+    function switchPage(pageName) {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+        document.getElementById(`page-${pageName}`).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    function saveData() {
+        localStorage.setItem('trackerState', JSON.stringify(state));
+        updateUI();
+    }
+
+    function toggleDarkMode() {
+        if (state.theme === 'dark') {
+            state.theme = 'light';
+            document.documentElement.removeAttribute('data-theme');
+            document.getElementById('themeBtn').innerText = '🌙 Dark Mode';
+        } else {
+            state.theme = 'dark';
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.getElementById('themeBtn').innerText = '☀️ Light Mode';
+        }
+        saveData();
+    }
+
+    function handleCurrencyChange() {
+        const select = document.getElementById('currencySelect');
+        const customInput = document.getElementById('customCurrencyInput');
+
+        if (select.value === 'custom') {
+            customInput.style.display = 'inline-block';
+            state.currency = customInput.value || '₱';
+        } else {
+            customInput.style.display = 'none';
+            state.currency = select.value;
+        }
+        saveData();
+    }
+
+    function saveCustomCurrency() {
+        const customInput = document.getElementById('customCurrencyInput');
+        state.currency = customInput.value || '';
+        saveData();
+    }
+
+    function formatMoney(amount) {
+        return `${state.currency}${amount.toFixed(2)}`;
+    }
+
+    function setTotalBalance() {
+        const val = parseFloat(document.getElementById('initBalanceInput').value);
+        if (!isNaN(val)) {
+            state.totalBalance = val;
+            document.getElementById('initBalanceInput').value = '';
+            saveData();
+        }
+    }
+
+    function addTotalBalance() {
+        const val = parseFloat(document.getElementById('initBalanceInput').value);
+        if (!isNaN(val) && val > 0) {
+            state.totalBalance += val;
+            document.getElementById('initBalanceInput').value = '';
+            saveData();
+        }
+    }
+
+    function createSavings(e) {
+        e.preventDefault();
+        if (state.savings.length >= 10) {
+            alert("Maximum of 10 savings buckets allowed.");
+            return;
+        }
+
+        const name = document.getElementById('savingsName').value.trim();
+        const amount = parseFloat(document.getElementById('savingsAmount').value);
+        const goalVal = parseFloat(document.getElementById('savingsGoal').value);
+        const goal = !isNaN(goalVal) && goalVal > 0 ? goalVal : null;
+
+        if (amount > state.totalBalance) {
+            alert("You cannot assign more money to savings than your total balance.");
+            return;
+        }
+
+        state.savings.push({ id: Date.now(), name, amount, goal });
+        document.getElementById('savingsName').value = '';
+        document.getElementById('savingsAmount').value = '';
+        document.getElementById('savingsGoal').value = '';
+        saveData();
+    }
+
+    function deleteSavings(id) {
+        if (confirm("Delete this savings bucket? (Funds will remain in total balance)")) {
+            state.savings = state.savings.filter(s => s.id !== id);
+            saveData();
+        }
+    }
+
+    function transferFunds(e) {
+        e.preventDefault();
+        const fromId = document.getElementById('transferFrom').value;
+        const toId = document.getElementById('transferTo').value;
+        const amount = parseFloat(document.getElementById('transferAmount').value);
+
+        if (fromId === toId) {
+            alert("Select two different locations to transfer between.");
+            return;
+        }
+
+        // Check source funds
+        if (fromId === 'main') {
+            const unallocated = getUnallocatedBalance();
+            if (amount > unallocated) {
+                alert("Insufficient unallocated main balance.");
+                return;
+            }
+        } else {
+            const sourceBucket = state.savings.find(s => s.id == fromId);
+            if (amount > sourceBucket.amount) {
+                alert(`Insufficient funds in ${sourceBucket.name}.`);
+                return;
+            }
+            sourceBucket.amount -= amount;
+        }
+
+        // Deposit to target
+        if (toId !== 'main') {
+            const targetBucket = state.savings.find(s => s.id == toId);
+            targetBucket.amount += amount;
+        }
+
+        document.getElementById('transferAmount').value = '';
+        saveData();
+    }
+
+    function deductExpense(e) {
+        e.preventDefault();
+        const amount = parseFloat(document.getElementById('expenseAmount').value);
+        const source = document.getElementById('expenseSource').value;
+        const category = document.getElementById('expenseCategory').value;
+        const note = document.getElementById('expenseNote').value;
+        const today = new Date().toISOString().split('T')[0];
+
+        if (source === 'main') {
+            if (amount > state.totalBalance) {
+                alert("Insufficient funds in Main Balance.");
+                return;
+            }
+            state.totalBalance -= amount;
+        } else {
+            const bucket = state.savings.find(s => s.id == source);
+            if (!bucket) return;
+
+            if (amount > bucket.amount) {
+                alert(`Insufficient funds in ${bucket.name}.`);
+                return;
+            }
+            bucket.amount -= amount;
+            state.totalBalance -= amount;
+        }
+
+        state.expenses.unshift({
+            id: Date.now(),
+            amount,
+            source,
+            sourceName: source === 'main' ? 'Main Balance' : state.savings.find(s => s.id == source).name,
+            category,
+            note,
+            date: today
+        });
+
+        document.getElementById('expenseAmount').value = '';
+        document.getElementById('expenseNote').value = '';
+        saveData();
+    }
+
+    function getUnallocatedBalance() {
+        const totalSavedInBuckets = state.savings.reduce((acc, s) => acc + s.amount, 0);
+        return state.totalBalance - totalSavedInBuckets;
+    }
+
+    function exportToCSV() {
+        if (state.expenses.length === 0) {
+            alert("No expenses recorded to export.");
+            return;
+        }
+
+        let csv = "Date,Note,Category,Source,Amount\n";
+        state.expenses.forEach(e => {
+            csv += `"${e.date}","${e.note}","${e.category}","${e.sourceName}",${e.amount}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fintact_export_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+    }
+
+    function resetAllData() {
+        if (confirm("Warning: Reset all data and delete all logs?")) {
+            const currentTheme = state.theme;
+            localStorage.removeItem('trackerState');
+            state = {
+                currency: '₱',
+                theme: currentTheme,
+                totalBalance: 0,
+                savings: [],
+                expenses: []
+            };
+            document.getElementById('currencySelect').value = '₱';
+            document.getElementById('customCurrencyInput').style.display = 'none';
+            saveData();
+        }
+    }
+
+    function updateUI() {
+        document.getElementById('totalBalance').innerText = formatMoney(state.totalBalance);
+        document.getElementById('savingsCount').innerText = state.savings.length;
+        
+        // Savings Grid Rendering
+        const savingsGrid = document.getElementById('savingsGrid');
+        savingsGrid.innerHTML = '';
+        
+        // Setup Select Dropdowns
+        const expenseSource = document.getElementById('expenseSource');
+        const transferFrom = document.getElementById('transferFrom');
+        const transferTo = document.getElementById('transferTo');
+
+        expenseSource.innerHTML = '<option value="main">Main Unallocated Balance</option>';
+        transferFrom.innerHTML = `<option value="main">Main Unallocated (${formatMoney(getUnallocatedBalance())})</option>`;
+        transferTo.innerHTML = '<option value="main">Main Unallocated Balance</option>';
+
+        state.savings.forEach(item => {
+            let goalHTML = '';
+            if (item.goal) {
+                const percent = Math.min(100, Math.round((item.amount / item.goal) * 100));
+                goalHTML = `
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+                        Target: ${formatMoney(item.goal)} (${percent}%)
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: ${percent}%;"></div>
+                    </div>
+                `;
+            }
+
+            const card = document.createElement('div');
+            card.className = 'savings-card';
+            card.innerHTML = `
+                <div>
+                    <h3>${item.name}</h3>
+                    <p>${formatMoney(item.amount)}</p>
+                    ${goalHTML}
+                </div>
+                <button class="btn-danger btn-small" onclick="deleteSavings(${item.id})">Delete</button>
+            `;
+            savingsGrid.appendChild(card);
+
+            const opt1 = new Option(`Savings: ${item.name} (${formatMoney(item.amount)})`, item.id);
+            const opt2 = new Option(`Savings: ${item.name} (${formatMoney(item.amount)})`, item.id);
+            const opt3 = new Option(`Savings: ${item.name} (${formatMoney(item.amount)})`, item.id);
+
+            expenseSource.add(opt1);
+            transferFrom.add(opt2);
+            transferTo.add(opt3);
+        });
+
+        document.getElementById('savingsForm').querySelector('button').disabled = state.savings.length >= 10;
+
+        // Filter Expense History
+        const filter = document.getElementById('timeFilter').value;
+        const today = new Date().toISOString().split('T')[0];
+        
+        const filteredExpenses = state.expenses.filter(e => {
+            if (filter === 'today') return e.date === today;
+            return true;
+        });
+
+        const totalSpent = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
+        document.getElementById('filteredTotal').innerText = formatMoney(totalSpent);
+
+        const logList = document.getElementById('expenseLog');
+        logList.innerHTML = '';
+        filteredExpenses.forEach(exp => {
+            const li = document.createElement('li');
+            li.className = 'log-item';
+            li.innerHTML = `
+                <div class="log-details">
+                    <strong>${exp.category} - ${exp.note}</strong>
+                    <span>${exp.date} • ${exp.sourceName}</span>
+                </div>
+                <span style="color: var(--danger); font-weight: 700;">-${formatMoney(exp.amount)}</span>
+            `;
+            logList.appendChild(li);
+        });
+    }
+</script>
+
+</body>
+</html>
