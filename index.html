@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fintact — Tactical Clarity for Your Money</title>
+    
+    <!-- Dynamic SVG Favicon for Tab Icon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='bgGlow' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%231e1b4b'/><stop offset='50%' stop-color='%23311b92'/><stop offset='100%' stop-color='%230f172a'/></linearGradient><linearGradient id='neonCyan' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%2338bdf8'/><stop offset='100%' stop-color='%230ea5e9'/></linearGradient><linearGradient id='neonEmerald' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%2334d399'/><stop offset='100%' stop-color='%2310b981'/></linearGradient><linearGradient id='goldGlow' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23fbbf24'/><stop offset='100%' stop-color='%23f59e0b'/></linearGradient></defs><rect width='100' height='100' rx='26' fill='url(%23bgGlow)'/><path d='M 50 16 L 82 28 C 82 58 68 78 50 86 C 32 78 18 58 18 28 Z' fill='none' stroke='rgba(255,255,255,0.2)' stroke-width='2'/><path d='M 50 22 L 28 32 C 28 54 38 71 50 78 V 48 Z' fill='url(%23neonCyan)'/><path d='M 50 22 L 72 32 C 72 54 62 71 50 78 V 48 Z' fill='url(%23neonEmerald)'/><path d='M 50 26 L 63 42 H 54 V 58 H 46 V 42 H 37 Z' fill='url(%23goldGlow)'/><circle cx='50' cy='26' r='3' fill='%23ffffff'/></svg>">
+
     <style>
         :root {
             --bg-color: #f3f4f6;
@@ -11,6 +15,7 @@
             --primary: #2563eb;
             --primary-gradient: linear-gradient(135deg, #2563eb, #1d4ed8);
             --danger: #dc2626;
+            --danger-muted: rgba(220, 38, 38, 0.7);
             --success: #059669;
             --text: #1f2937;
             --text-muted: #6b7280;
@@ -25,6 +30,7 @@
             --primary: #3b82f6;
             --primary-gradient: linear-gradient(135deg, #3b82f6, #2563eb);
             --danger: #ef4444;
+            --danger-muted: rgba(239, 68, 68, 0.75);
             --success: #10b981;
             --text: #f9fafb;
             --text-muted: #9ca3af;
@@ -57,10 +63,10 @@
             gap: 16px;
         }
 
-        /* Top Redesigned Brand Header */
+        /* Top Header Logo Component */
         .brand-header {
             background: var(--card-bg);
-            padding: 16px;
+            padding: 14px 16px;
             border-radius: 16px;
             display: flex;
             justify-content: space-between;
@@ -76,17 +82,25 @@
         }
 
         .brand-logo-icon {
-            width: 42px;
-            height: 42px;
-            background: var(--primary-gradient);
-            color: white;
-            border-radius: 12px;
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
-            font-weight: 800;
-            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+
+        .brand-logo-icon:hover {
+            transform: scale(1.04);
+        }
+
+        .brand-logo-icon svg {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
         .brand-meta {
@@ -95,12 +109,12 @@
         }
 
         .brand-name {
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             font-weight: 800;
             letter-spacing: -0.3px;
             margin: 0;
             line-height: 1.2;
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #2563eb, #0d9488);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -140,12 +154,13 @@
             gap: 4px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             border: 1px solid var(--border);
+            overflow-x: auto;
         }
 
         .nav-btn {
             flex: 1;
-            padding: 10px;
-            font-size: 0.9rem;
+            padding: 10px 6px;
+            font-size: 0.78rem;
             font-weight: 600;
             border-radius: 8px;
             border: none;
@@ -154,6 +169,7 @@
             cursor: pointer;
             min-height: 40px;
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .nav-btn.active {
@@ -179,6 +195,7 @@
             border-radius: 16px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             border: 1px solid var(--border);
+            position: relative;
         }
 
         h2 { 
@@ -192,16 +209,40 @@
             align-items: center;
             gap: 8px;
             margin-top: 8px;
-            margin-bottom: 8px;
             flex-wrap: wrap;
         }
 
+        .balance-card-centered {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 12px 0 24px 0;
+            position: relative;
+        }
+
         .balance-display {
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             font-weight: 800;
             color: var(--primary);
-            margin: 6px 0;
+            margin: 4px 0;
             word-break: break-all;
+        }
+
+        /* PHP Green Tag positioned on the bottom right corner */
+        .php-convert-tag {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--success);
+            background: rgba(5, 150, 105, 0.08);
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(5, 150, 105, 0.2);
+            white-space: nowrap;
         }
 
         form, .input-group {
@@ -238,6 +279,7 @@
 
         .btn-danger { background-color: var(--danger); color: white; }
         .btn-success { background-color: var(--success); color: white; }
+        .btn-secondary { background-color: var(--card-sub-bg); color: var(--text); border: 1px solid var(--border); }
 
         .btn-small {
             min-height: 36px;
@@ -267,7 +309,9 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            gap: 8px;
+            gap: 12px;
+            position: relative;
+            min-height: 110px;
         }
 
         .savings-card h3 { 
@@ -281,6 +325,21 @@
             font-size: 1.1rem; 
             font-weight: 700; 
             word-break: break-all;
+        }
+
+        .savings-card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .bucket-deductions {
+            font-size: 0.73rem;
+            font-weight: 600;
+            color: var(--danger-muted);
+            white-space: nowrap;
         }
 
         /* Progress Bar */
@@ -313,6 +372,7 @@
             padding: 12px 0;
             border-bottom: 1px solid var(--border);
             gap: 10px;
+            position: relative;
         }
 
         .log-item:last-child { border-bottom: none; }
@@ -325,15 +385,147 @@
 
         .log-details strong { font-size: 0.95rem; }
         .log-details span { font-size: 0.8rem; color: var(--text-muted); }
+
+        .delete-savings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .delete-savings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--card-sub-bg);
+        }
+
+        /* Toggle Switch styling */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            min-height: unset;
+            padding: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: 0.3s;
+            border-radius: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s ease;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Redesigned Top Header -->
+    <!-- Top Header with Eye-Catching Modern Futuristic Diamond-Shield Logo -->
     <header class="brand-header">
         <div class="brand-left">
-            <div class="brand-logo-icon">F</div>
+            <div class="brand-logo-icon">
+                <svg width="46" height="46" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <!-- Vivid Multicolored Background Gradient -->
+                    <linearGradient id="bgGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#1e1b4b" />
+                      <stop offset="50%" stop-color="#311b92" />
+                      <stop offset="100%" stop-color="#0f172a" />
+                    </linearGradient>
+                    
+                    <!-- Cyan / Teal Neon Front Gradient -->
+                    <linearGradient id="neonCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#38bdf8" />
+                      <stop offset="100%" stop-color="#0ea5e9" />
+                    </linearGradient>
+
+                    <!-- Emerald / Mint Growth Gradient -->
+                    <linearGradient id="neonEmerald" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#34d399" />
+                      <stop offset="100%" stop-color="#10b981" />
+                    </linearGradient>
+
+                    <!-- Golden Accent Gradient -->
+                    <linearGradient id="goldGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#fbbf24" />
+                      <stop offset="100%" stop-color="#f59e0b" />
+                    </linearGradient>
+                    
+                    <!-- Drop Shadow for 3D depth -->
+                    <filter id="shadow3d" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.4"/>
+                    </filter>
+                  </defs>
+
+                  <!-- Icon Container Base -->
+                  <rect width="100" height="100" rx="26" fill="url(#bgGlow)"/>
+                  
+                  <!-- Outer Shield Contour (Subtle Glow Border) -->
+                  <path d="M 50 16 L 82 28 C 82 58 68 78 50 86 C 32 78 18 58 18 28 Z" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+
+                  <!-- Dynamic Faceted Diamond-Cut Arrows & Shield Symbol -->
+                  <g filter="url(#shadow3d)">
+                    <!-- Left Wing / Shield Facet (Cyan) -->
+                    <path d="M 50 22 L 28 32 C 28 54 38 71 50 78 V 48 Z" fill="url(#neonCyan)"/>
+                    
+                    <!-- Right Wing / Shield Facet (Emerald) -->
+                    <path d="M 50 22 L 72 32 C 72 54 62 71 50 78 V 48 Z" fill="url(#neonEmerald)"/>
+                    
+                    <!-- Centered Floating Upward Financial Arrow Crest (Gold) -->
+                    <path d="M 50 26 L 63 42 H 54 V 58 H 46 V 42 H 37 Z" fill="url(#goldGlow)"/>
+                  </g>
+
+                  <!-- Bright Core Sparkle Dot -->
+                  <circle cx="50" cy="26" r="3" fill="#ffffff"/>
+                </svg>
+            </div>
             <div class="brand-meta">
                 <span class="brand-name">Fintact</span>
                 <span class="brand-tagline">Tactical Financial Clarity</span>
@@ -341,72 +533,44 @@
         </div>
         <div class="brand-badge">
             <div class="brand-badge-dot"></div>
-            <span>Active</span>
+            <span id="rateStatus">Live Rates</span>
         </div>
     </header>
 
     <!-- Top Navigation Bar -->
     <nav class="nav-bar">
         <button class="nav-btn active" onclick="switchPage('dashboard')">📊 Dashboard</button>
-        <button class="nav-btn" onclick="switchPage('settings')">⚙️ Settings & Actions</button>
+        <button class="nav-btn" onclick="switchPage('management')">💰 Manage</button>
+        <button class="nav-btn" onclick="switchPage('history')">📜 History</button>
+        <button class="nav-btn" onclick="switchPage('settings')">⚙️ Settings</button>
     </nav>
 
     <!-- PAGE 1: DASHBOARD -->
     <div id="page-dashboard" class="page active">
-        <!-- Total Balance Section -->
-        <div class="card">
-            <h2>Total Available Money</h2>
-
-            <!-- Currency Selector -->
-            <div class="currency-setting">
-                <label for="currencySelect" style="font-size: 0.85rem; font-weight: 600;">Currency:</label>
-                <select id="currencySelect" onchange="handleCurrencyChange()" style="min-height: 36px; padding: 4px 8px; width: auto;">
-                    <option value="₱">PHP (₱)</option>
-                    <option value="NT$">TWD (NT$)</option>
-                    <option value="$">USD ($)</option>
-                    <option value="€">EUR (€)</option>
-                    <option value="£">GBP (£)</option>
-                    <option value="¥">JPY (¥)</option>
-                    <option value="CAD $">CAD ($)</option>
-                    <option value="AUD $">AUD ($)</option>
-                    <option value="custom">Custom...</option>
-                </select>
-                <input type="text" id="customCurrencyInput" placeholder="Code" style="display: none; width: 70px; min-height: 36px; padding: 4px 8px;" oninput="saveCustomCurrency()">
-            </div>
-
+        <!-- Total Balance Display Section (Centered) -->
+        <div class="card balance-card-centered">
+            <h2 style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600; margin-bottom: 2px;">Total Available Money</h2>
             <div class="balance-display" id="totalBalance">₱0.00</div>
-            
-            <div class="input-group">
-                <input type="number" id="initBalanceInput" inputmode="decimal" placeholder="Amount" step="0.01">
-                <div style="display: flex; gap: 8px;">
-                    <button onclick="setTotalBalance()">Set Total</button>
-                    <button onclick="addTotalBalance()" class="btn-success">Add Funds</button>
-                </div>
-            </div>
+            <div class="php-convert-tag" id="totalBalancePhp"></div>
         </div>
 
-        <!-- Savings Goals Section -->
+        <!-- Savings Display Grid -->
         <div class="card">
-            <h2>Savings Buckets (<span id="savingsCount">0</span>/10)</h2>
-            <form id="savingsForm" onsubmit="createSavings(event)">
-                <input type="text" id="savingsName" placeholder="Bucket Name (e.g. Travel)" required>
-                <input type="number" id="savingsAmount" inputmode="decimal" placeholder="Initial Deposit" step="0.01" min="0" required>
-                <input type="number" id="savingsGoal" inputmode="decimal" placeholder="Target Goal (Optional)" step="0.01" min="0">
-                <button type="submit">Create Bucket</button>
-            </form>
+            <h2>Savings Buckets Overview (<span id="savingsCount">0</span>/10)</h2>
             <div class="savings-grid" id="savingsGrid"></div>
         </div>
 
         <!-- Daily Expense / Deduction Section -->
         <div class="card">
             <h2>Log Expense</h2>
-            <form onsubmit="deductExpense(event)">
+            <form id="expenseForm" onsubmit="deductExpense(event)">
                 <input type="number" id="expenseAmount" inputmode="decimal" placeholder="Amount spent" step="0.01" min="0.01" required>
                 <select id="expenseSource" required>
                     <option value="" disabled selected>Deduct from...</option>
                     <option value="main">Main Unallocated Balance</option>
                 </select>
-                <select id="expenseCategory">
+                <select id="expenseCategory" required>
+                    <option value="" disabled selected>Choose Category</option>
                     <option value="🍔 Food">🍔 Food</option>
                     <option value="🚗 Transport">🚗 Transport</option>
                     <option value="🎬 Entertainment">🎬 Entertainment</option>
@@ -417,32 +581,61 @@
                 <input type="text" id="expenseNote" placeholder="Note (e.g. Dinner with friends)" required>
                 <button type="submit" class="btn-danger">Record Expense</button>
             </form>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                <h3 style="font-size: 1rem; margin: 0;">Spent Log</h3>
-                <select id="timeFilter" onchange="updateUI()" style="width: auto; min-height: 36px; padding: 4px 8px;">
-                    <option value="today">Today</option>
-                    <option value="all">All History</option>
-                </select>
-            </div>
-            
-            <div style="margin-top: 8px; font-weight: 700; font-size: 0.95rem;">
-                Total: <span id="filteredTotal" style="color: var(--danger);">₱0.00</span>
-            </div>
-
-            <ul class="log-list" id="expenseLog"></ul>
         </div>
     </div>
 
-    <!-- PAGE 2: SETTINGS & ACTIONS -->
-    <div id="page-settings" class="page">
-        <!-- Appearance Settings -->
+    <!-- PAGE 2: MANAGE TAB -->
+    <div id="page-management" class="page">
+        <!-- Currency Setting Section -->
         <div class="card">
-            <h2>🎨 Preferences</h2>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-                <span style="font-weight: 600;">Theme:</span>
-                <button class="btn-small" onclick="toggleDarkMode()" id="themeBtn">🌙 Dark Mode</button>
+            <h2>💱 Currency Preference</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 8px 0;">Select or specify your primary currency symbol.</p>
+            <div class="currency-setting">
+                <select id="currencySelect" onchange="handleCurrencyChange()">
+                    <option value="PHP" data-symbol="₱">PHP (₱)</option>
+                    <option value="TWD" data-symbol="NT$">TWD (NT$)</option>
+                    <option value="USD" data-symbol="$">USD ($)</option>
+                    <option value="EUR" data-symbol="€">EUR (€)</option>
+                    <option value="GBP" data-symbol="£">GBP (£)</option>
+                    <option value="JPY" data-symbol="¥">JPY (¥)</option>
+                    <option value="CAD" data-symbol="CAD $">CAD ($)</option>
+                    <option value="AUD" data-symbol="AUD $">AUD ($)</option>
+                    <option value="custom">Custom Code / Symbol...</option>
+                </select>
+                <input type="text" id="customCurrencyInput" placeholder="Currency Code (e.g., SGD, HKD)" style="display: none;" oninput="saveCustomCurrency()">
             </div>
+        </div>
+
+        <!-- Manage Total Available Funds -->
+        <div class="card">
+            <h2>Update Total Available Funds</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Set or add new funds directly into your total available money pool.</p>
+            <div class="input-group">
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="toggleBalanceInput('set')">Set Total</button>
+                    <button onclick="toggleBalanceInput('add')" class="btn-success">Add Funds</button>
+                </div>
+
+                <div id="balanceInputContainer" style="display: none; flex-direction: column; gap: 8px; margin-top: 8px;">
+                    <input type="number" id="initBalanceInput" inputmode="decimal" placeholder="Enter Amount" step="0.01">
+                    <div style="display: flex; gap: 8px;">
+                        <button id="balanceConfirmBtn" onclick="confirmBalanceAction()">Confirm</button>
+                        <button onclick="cancelBalanceAction()" class="btn-danger" style="width: auto; min-width: 80px;">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Savings Bucket Form -->
+        <div class="card">
+            <h2>Create New Savings Bucket</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Set up dedicated buckets to reserve money for specific goals.</p>
+            <form id="savingsForm" onsubmit="createSavings(event)">
+                <input type="text" id="savingsName" placeholder="Bucket Name (e.g. Travel)" required>
+                <input type="number" id="savingsAmount" inputmode="decimal" placeholder="Initial Deposit" step="0.01" min="0" required>
+                <input type="number" id="savingsGoal" inputmode="decimal" placeholder="Target Goal (Optional)" step="0.01" min="0">
+                <button type="submit">Create Bucket</button>
+            </form>
         </div>
 
         <!-- Money Transfer Section -->
@@ -460,15 +653,55 @@
                 <button type="submit">Execute Transfer</button>
             </form>
         </div>
+    </div>
 
-        <!-- Data Export & Backup Section -->
+    <!-- PAGE 3: HISTORY TAB -->
+    <div id="page-history" class="page">
         <div class="card">
-            <h2>📥 Export Data</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Download your full expense history as a CSV spreadsheet file.</p>
-            <button class="btn-success" onclick="exportToCSV()">Export Expense History</button>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0;">📜 Spent Log History</h2>
+                <select id="timeFilter" onchange="updateUI()" style="width: auto; min-height: 36px; padding: 4px 8px;">
+                    <option value="today">Today</option>
+                    <option value="all">All History</option>
+                </select>
+            </div>
+            
+            <div style="margin-top: 12px; font-weight: 700; font-size: 1rem; position: relative;">
+                Total Spent: <span id="filteredTotal" style="color: var(--danger);">₱0.00</span>
+                <span class="php-convert-tag" id="historyTotalPhp" style="top: 0; bottom: auto;"></span>
+            </div>
+
+            <ul class="log-list" id="expenseLog"></ul>
+        </div>
+    </div>
+
+    <!-- PAGE 4: SETTINGS & ACTIONS -->
+    <div id="page-settings" class="page">
+        <div class="card">
+            <h2>🎨 Preferences</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                <span style="font-weight: 600;" id="themeLabel">Dark Mode</span>
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch">
+                        <input type="checkbox" id="themeToggleSwitch" onchange="toggleDarkMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
         </div>
 
-        <!-- Danger Zone Section -->
+        <div class="card">
+            <h2>🗑️ Delete Savings Buckets</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Remove unwanted buckets. Bucket funds will automatically return to your main total balance.</p>
+            <div class="delete-savings-list" id="deleteSavingsList"></div>
+        </div>
+
+        <div class="card">
+            <h2>📥 Export Data</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Download your full expense log as a CSV spreadsheet file.</p>
+            <button class="btn-success" onclick="exportToCSV()">📄 Download CSV File</button>
+        </div>
+
         <div class="card" style="border: 1px solid var(--danger);">
             <h2 style="color: var(--danger);">⚠️ Danger Zone</h2>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 12px 0;">Permanently clear all balance, savings buckets, and expense logs.</p>
@@ -479,41 +712,71 @@
 
 <script>
     let state = {
-        currency: '₱',
+        currencyCode: 'PHP',
+        currencySymbol: '₱',
         theme: 'light',
         totalBalance: 0,
         savings: [],
         expenses: []
     };
 
+    let phpExchangeRates = { PHP: 1.0 };
+    let activeBalanceMode = null;
+
     window.onload = function() {
         const saved = localStorage.getItem('trackerState');
         if (saved) {
             state = JSON.parse(saved);
         }
+
+        if (!state.currencyCode) {
+            state.currencyCode = 'PHP';
+            state.currencySymbol = state.currency || '₱';
+        }
         
-        // Setup Theme
+        const themeSwitch = document.getElementById('themeToggleSwitch');
+        const themeLabel = document.getElementById('themeLabel');
         if (state.theme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
-            document.getElementById('themeBtn').innerText = '☀️ Light Mode';
+            themeSwitch.checked = true;
+            themeLabel.innerText = '🌙 Dark Mode';
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            themeSwitch.checked = false;
+            themeLabel.innerText = '☀️ Light Mode';
         }
 
-        // Setup Currency
         const select = document.getElementById('currencySelect');
         const customInput = document.getElementById('customCurrencyInput');
-        const presetValues = Array.from(select.options).map(opt => opt.value);
         
-        if (presetValues.includes(state.currency)) {
-            select.value = state.currency;
+        let matchedOption = Array.from(select.options).find(opt => opt.value === state.currencyCode);
+        if (matchedOption) {
+            select.value = state.currencyCode;
             customInput.style.display = 'none';
         } else {
             select.value = 'custom';
-            customInput.value = state.currency;
-            customInput.style.display = 'inline-block';
+            customInput.value = state.currencyCode;
+            customInput.style.display = 'block';
         }
 
-        updateUI();
+        fetchLiveExchangeRates();
     };
+
+    async function fetchLiveExchangeRates() {
+        try {
+            const res = await fetch('https://open.er-api.com/v6/latest/PHP');
+            const data = await res.json();
+            if (data && data.rates) {
+                phpExchangeRates = data.rates;
+                document.getElementById('rateStatus').innerText = 'Live Rates Active';
+            }
+        } catch (err) {
+            console.warn('Unable to fetch live rates, using fallback conversion rates.', err);
+            phpExchangeRates = { PHP: 1, USD: 0.018, EUR: 0.016, JPY: 2.7, GBP: 0.014, TWD: 0.56, CAD: 0.024, AUD: 0.027 };
+            document.getElementById('rateStatus').innerText = 'Offline Rates';
+        }
+        updateUI();
+    }
 
     function switchPage(pageName) {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
@@ -529,14 +792,17 @@
     }
 
     function toggleDarkMode() {
-        if (state.theme === 'dark') {
-            state.theme = 'light';
-            document.documentElement.removeAttribute('data-theme');
-            document.getElementById('themeBtn').innerText = '🌙 Dark Mode';
-        } else {
+        const themeSwitch = document.getElementById('themeToggleSwitch');
+        const themeLabel = document.getElementById('themeLabel');
+
+        if (themeSwitch.checked) {
             state.theme = 'dark';
             document.documentElement.setAttribute('data-theme', 'dark');
-            document.getElementById('themeBtn').innerText = '☀️ Light Mode';
+            themeLabel.innerText = '🌙 Dark Mode';
+        } else {
+            state.theme = 'light';
+            document.documentElement.removeAttribute('data-theme');
+            themeLabel.innerText = '☀️ Light Mode';
         }
         saveData();
     }
@@ -544,43 +810,81 @@
     function handleCurrencyChange() {
         const select = document.getElementById('currencySelect');
         const customInput = document.getElementById('customCurrencyInput');
+        const selectedOpt = select.options[select.selectedIndex];
 
         if (select.value === 'custom') {
-            customInput.style.display = 'inline-block';
-            state.currency = customInput.value || '₱';
+            customInput.style.display = 'block';
+            state.currencyCode = customInput.value.trim().toUpperCase() || 'USD';
+            state.currencySymbol = state.currencyCode;
         } else {
             customInput.style.display = 'none';
-            state.currency = select.value;
+            state.currencyCode = select.value;
+            state.currencySymbol = selectedOpt.getAttribute('data-symbol') || select.value;
         }
         saveData();
     }
 
     function saveCustomCurrency() {
         const customInput = document.getElementById('customCurrencyInput');
-        state.currency = customInput.value || '';
+        const code = customInput.value.trim().toUpperCase();
+        state.currencyCode = code || 'USD';
+        state.currencySymbol = code || 'USD';
         saveData();
     }
 
     function formatMoney(amount) {
-        return `${state.currency}${amount.toFixed(2)}`;
+        return `${state.currencySymbol}${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
-    function setTotalBalance() {
+    function convertToPhpText(amount) {
+        if (state.currencyCode === 'PHP' || !phpExchangeRates) return '';
+        
+        const rateToPhp = phpExchangeRates[state.currencyCode];
+        if (!rateToPhp || rateToPhp <= 0) return '';
+
+        const phpAmount = amount / rateToPhp;
+        return `≈ ₱${phpAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    function toggleBalanceInput(mode) {
+        const container = document.getElementById('balanceInputContainer');
+        const input = document.getElementById('initBalanceInput');
+        const confirmBtn = document.getElementById('balanceConfirmBtn');
+
+        activeBalanceMode = mode;
+        container.style.display = 'flex';
+        input.value = '';
+        input.placeholder = mode === 'set' ? 'Enter total balance amount' : 'Enter amount to add';
+        
+        if (mode === 'add') {
+            confirmBtn.className = 'btn-success';
+        } else {
+            confirmBtn.className = '';
+        }
+
+        input.focus();
+    }
+
+    function cancelBalanceAction() {
+        const container = document.getElementById('balanceInputContainer');
+        container.style.display = 'none';
+        activeBalanceMode = null;
+    }
+
+    function confirmBalanceAction() {
         const val = parseFloat(document.getElementById('initBalanceInput').value);
-        if (!isNaN(val)) {
+        
+        if (isNaN(val)) return;
+
+        if (activeBalanceMode === 'set') {
             state.totalBalance = val;
-            document.getElementById('initBalanceInput').value = '';
-            saveData();
-        }
-    }
-
-    function addTotalBalance() {
-        const val = parseFloat(document.getElementById('initBalanceInput').value);
-        if (!isNaN(val) && val > 0) {
+        } else if (activeBalanceMode === 'add' && val > 0) {
             state.totalBalance += val;
-            document.getElementById('initBalanceInput').value = '';
-            saveData();
         }
+
+        cancelBalanceAction();
+        saveData();
+        switchPage('dashboard');
     }
 
     function createSavings(e) {
@@ -605,6 +909,7 @@
         document.getElementById('savingsAmount').value = '';
         document.getElementById('savingsGoal').value = '';
         saveData();
+        switchPage('dashboard');
     }
 
     function deleteSavings(id) {
@@ -625,7 +930,6 @@
             return;
         }
 
-        // Check source funds
         if (fromId === 'main') {
             const unallocated = getUnallocatedBalance();
             if (amount > unallocated) {
@@ -641,7 +945,6 @@
             sourceBucket.amount -= amount;
         }
 
-        // Deposit to target
         if (toId !== 'main') {
             const targetBucket = state.savings.find(s => s.id == toId);
             targetBucket.amount += amount;
@@ -658,6 +961,11 @@
         const category = document.getElementById('expenseCategory').value;
         const note = document.getElementById('expenseNote').value;
         const today = new Date().toISOString().split('T')[0];
+
+        if (!category) {
+            alert("Please choose an expense category.");
+            return;
+        }
 
         if (source === 'main') {
             if (amount > state.totalBalance) {
@@ -689,12 +997,19 @@
 
         document.getElementById('expenseAmount').value = '';
         document.getElementById('expenseNote').value = '';
+        document.getElementById('expenseCategory').selectedIndex = 0;
         saveData();
     }
 
     function getUnallocatedBalance() {
         const totalSavedInBuckets = state.savings.reduce((acc, s) => acc + s.amount, 0);
         return state.totalBalance - totalSavedInBuckets;
+    }
+
+    function getBucketTotalDeductions(bucketId) {
+        return state.expenses
+            .filter(exp => exp.source == bucketId)
+            .reduce((sum, exp) => sum + exp.amount, 0);
     }
 
     function exportToCSV() {
@@ -721,13 +1036,14 @@
             const currentTheme = state.theme;
             localStorage.removeItem('trackerState');
             state = {
-                currency: '₱',
+                currencyCode: 'PHP',
+                currencySymbol: '₱',
                 theme: currentTheme,
                 totalBalance: 0,
                 savings: [],
                 expenses: []
             };
-            document.getElementById('currencySelect').value = '₱';
+            document.getElementById('currencySelect').value = 'PHP';
             document.getElementById('customCurrencyInput').style.display = 'none';
             saveData();
         }
@@ -735,13 +1051,32 @@
 
     function updateUI() {
         document.getElementById('totalBalance').innerText = formatMoney(state.totalBalance);
+        
+        const mainPhpTag = document.getElementById('totalBalancePhp');
+        const convertedTotal = convertToPhpText(state.totalBalance);
+        if (convertedTotal) {
+            mainPhpTag.innerText = convertedTotal;
+            mainPhpTag.style.display = 'block';
+        } else {
+            mainPhpTag.style.display = 'none';
+        }
+
         document.getElementById('savingsCount').innerText = state.savings.length;
         
-        // Savings Grid Rendering
         const savingsGrid = document.getElementById('savingsGrid');
         savingsGrid.innerHTML = '';
+
+        if (state.savings.length === 0) {
+            savingsGrid.innerHTML = '<span style="color: var(--text-muted); font-size: 0.85rem;">No savings buckets created yet. Use the Manage tab to add one.</span>';
+        }
+
+        const deleteSavingsList = document.getElementById('deleteSavingsList');
+        deleteSavingsList.innerHTML = '';
+
+        if (state.savings.length === 0) {
+            deleteSavingsList.innerHTML = '<span style="color: var(--text-muted); font-size: 0.85rem;">No savings buckets created yet.</span>';
+        }
         
-        // Setup Select Dropdowns
         const expenseSource = document.getElementById('expenseSource');
         const transferFrom = document.getElementById('transferFrom');
         const transferTo = document.getElementById('transferTo');
@@ -764,6 +1099,10 @@
                 `;
             }
 
+            const totalDeductions = getBucketTotalDeductions(item.id);
+            const deductionsText = totalDeductions > 0 ? `-${formatMoney(totalDeductions)}` : '';
+            const convertedBucketPhp = convertToPhpText(item.amount);
+
             const card = document.createElement('div');
             card.className = 'savings-card';
             card.innerHTML = `
@@ -772,9 +1111,23 @@
                     <p>${formatMoney(item.amount)}</p>
                     ${goalHTML}
                 </div>
-                <button class="btn-danger btn-small" onclick="deleteSavings(${item.id})">Delete</button>
+                <div class="savings-card-bottom">
+                    <span class="bucket-deductions">${deductionsText}</span>
+                    ${convertedBucketPhp ? `<span class="php-convert-tag">${convertedBucketPhp}</span>` : ''}
+                </div>
             `;
             savingsGrid.appendChild(card);
+
+            const deleteItem = document.createElement('div');
+            deleteItem.className = 'delete-savings-item';
+            deleteItem.innerHTML = `
+                <div style="display: flex; flex-direction: column;">
+                    <strong style="font-size: 0.95rem;">${item.name}</strong>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">${formatMoney(item.amount)}</span>
+                </div>
+                <button class="btn-danger btn-small" onclick="deleteSavings(${item.id})">Delete</button>
+            `;
+            deleteSavingsList.appendChild(deleteItem);
 
             const opt1 = new Option(`Savings: ${item.name} (${formatMoney(item.amount)})`, item.id);
             const opt2 = new Option(`Savings: ${item.name} (${formatMoney(item.amount)})`, item.id);
@@ -787,7 +1140,6 @@
 
         document.getElementById('savingsForm').querySelector('button').disabled = state.savings.length >= 10;
 
-        // Filter Expense History
         const filter = document.getElementById('timeFilter').value;
         const today = new Date().toISOString().split('T')[0];
         
@@ -799,20 +1151,37 @@
         const totalSpent = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
         document.getElementById('filteredTotal').innerText = formatMoney(totalSpent);
 
+        const historyPhpTag = document.getElementById('historyTotalPhp');
+        const convertedHistoryPhp = convertToPhpText(totalSpent);
+        if (convertedHistoryPhp) {
+            historyPhpTag.innerText = convertedHistoryPhp;
+            historyPhpTag.style.display = 'inline-block';
+        } else {
+            historyPhpTag.style.display = 'none';
+        }
+
         const logList = document.getElementById('expenseLog');
         logList.innerHTML = '';
-        filteredExpenses.forEach(exp => {
-            const li = document.createElement('li');
-            li.className = 'log-item';
-            li.innerHTML = `
-                <div class="log-details">
-                    <strong>${exp.category} - ${exp.note}</strong>
-                    <span>${exp.date} • ${exp.sourceName}</span>
-                </div>
-                <span style="color: var(--danger); font-weight: 700;">-${formatMoney(exp.amount)}</span>
-            `;
-            logList.appendChild(li);
-        });
+        if (filteredExpenses.length === 0) {
+            logList.innerHTML = '<li style="color: var(--text-muted); font-size: 0.9rem; padding: 12px 0;">No expense records found.</li>';
+        } else {
+            filteredExpenses.forEach(exp => {
+                const li = document.createElement('li');
+                li.className = 'log-item';
+                const convertedExpPhp = convertToPhpText(exp.amount);
+                li.innerHTML = `
+                    <div class="log-details">
+                        <strong>${exp.category} - ${exp.note}</strong>
+                        <span>${exp.date} • ${exp.sourceName}</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                        <span style="color: var(--danger); font-weight: 700;">-${formatMoney(exp.amount)}</span>
+                        ${convertedExpPhp ? `<span style="font-size: 0.72rem; color: var(--success); font-weight: 600;">-${convertedExpPhp}</span>` : ''}
+                    </div>
+                `;
+                logList.appendChild(li);
+            });
+        }
     }
 </script>
 
